@@ -2,18 +2,24 @@
 
 //
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <math.h>
 #include <signal.h>
+#include <stdio.h>
+#include <time.h>
+#include <unistd.h>
+
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <signal.h>
 
 #include "led-matrix.h"
 #include "opc.h"
 
-Canvas *canvas;
-
 using rgb_matrix::GPIO;
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::Canvas;
+
+Canvas *canvas;
 
 volatile bool interrupt_received = false;
 static void InterruptHandler(int signo) {

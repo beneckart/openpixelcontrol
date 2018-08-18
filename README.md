@@ -1,5 +1,23 @@
-openpixelcontrol
+openpixelcontrol-rgbmatrix
 ================
+
+A branch of openpixelcontrol to support rgbmatrices on the raspberry pi. 
+
+Need opengl libraries (freeflut) for the opengl server example. Also need 
+python2.7-dev python-pillow python3-dev python3-pillow for the python 
+bindings. 
+
+Change /boot/config.txt as follows:
+
+# Enable audio (loads snd_bcm2835)
+dtparam=audio=off
+
+To make sure the rgbmatrix works, go into matrix folder, run make, then go to
+folder "examples-api-use" and run:
+
+sudo ./demo -t 10000 -D 8 -m 1 runtext.ppm --led-rows 64 --led-cols 64 --led-no-hardware-pulse 1 --led-show-refresh --led-gpio-mapping adafruit-hat
+
+-------------------
 
 A simple stream protocol for controlling RGB lighting, particularly RGB LEDs.
 See http://openpixelcontrol.org/ for a spec.

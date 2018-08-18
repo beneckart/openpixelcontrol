@@ -23,12 +23,12 @@ clean:
 	rm -rf bin/*
 	
 # (FYI: Make sure, there is a TAB-character in front of the $(MAKE))
-$(RGB_LIBRARY):
+$(RGB_LIBRARY): 
 	$(MAKE) -C $(RGB_LIBDIR)
 	
 bin/rgbmatrix_server: src/rgbmatrix_server.cc src/opc_server.c $(RGB_LIBRARY)
 	mkdir -p bin
-	gcc ${CFLAGS} -o $@ $^ $(LDFLAGS)
+	$(CXX) ${CFLAGS} -I$(RGB_INCDIR) $^ -o $@ $(LDFLAGS)
 
 bin/dummy_client: src/dummy_client.c src/opc_client.c
 	mkdir -p bin
