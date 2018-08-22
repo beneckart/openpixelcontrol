@@ -10,10 +10,10 @@ LDFLAGS+=-L$(RGB_LIBDIR) -l$(RGB_LIBRARY_NAME) -lrt -lm -lpthread
 # was -02
 CFLAGS=-O3 -g
 ifeq ($(platform),Darwin)
-  ALL=bin/rgbmatrix_server bin/dummy_client bin/dummy_server bin/gl_server
+  ALL=bin/rgbmatrix_server bin/rgbmatrix_vsync_server bin/rgbmatrix_threaded_server bin/dummy_client bin/dummy_server bin/gl_server
   GL_OPTS=-framework OpenGL -framework GLUT -Wno-deprecated-declarations
 else ifeq ($(platform),Linux)
-  ALL=bin/rgbmatrix_server bin/dummy_client bin/dummy_server bin/tcl_server bin/apa102_server bin/ws2801_server bin/lpd8806_server bin/gl_server
+  ALL=bin/rgbmatrix_server bin/rgbmatrix_vsync_server bin/rgbmatrix_threaded_server bin/dummy_client bin/dummy_server bin/tcl_server bin/apa102_server bin/ws2801_server bin/lpd8806_server bin/gl_server
   GL_OPTS=-lGL -lglut -lGLU -lm
 endif
 
@@ -27,6 +27,14 @@ $(RGB_LIBRARY):
 	$(MAKE) -C $(RGB_LIBDIR)
 	
 bin/rgbmatrix_server: src/rgbmatrix_server.cc src/opc_server.c $(RGB_LIBRARY)
+	mkdir -p bin
+	$(CXX) ${CFLAGS} -I$(RGB_INCDIR) $^ -o $@ $(LDFLAGS)
+
+bin/rgbmatrix_vsync_server: src/rgbmatrix_vsync_server.cc src/opc_server.c $(RGB_LIBRARY)
+	mkdir -p bin
+	$(CXX) ${CFLAGS} -I$(RGB_INCDIR) $^ -o $@ $(LDFLAGS)
+
+bin/rgbmatrix_threaded_server: src/rgbmatrix_threaded_server.cc src/opc_server.c $(RGB_LIBRARY)
 	mkdir -p bin
 	$(CXX) ${CFLAGS} -I$(RGB_INCDIR) $^ -o $@ $(LDFLAGS)
 

@@ -30,16 +30,20 @@ void handler(uint8_t channel, uint16_t count, pixel* pixels) {
   int i = 0;
   int x = 0;
   int y = 0;
-  //printf("-> channel %d: %d pixel%s", channel, count, count == 1 ? "" : "s");
+  //printf("-> channel %d: %d pixel%s\n", channel, count, count == 1 ? "" : "s");
   
   //canvas->Clear();
   //canvas->Fill(0, 0, 0);
   
   // expect a full frame each time
   // rgbmatrix data payload should be 64*64*3 = 12288 bytes
+  if(count < 4000) return; // bad data?
+
   for (i = 0; i < count; i++) {
     x = i % canvas->width();
     y = i / canvas->width();
+    if (interrupt_received)
+      return;
     canvas->SetPixel(x, y, pixels[i].r, pixels[i].g, pixels[i].b);
   }
   
@@ -56,7 +60,7 @@ void handler(uint8_t channel, uint16_t count, pixel* pixels) {
 
   
 int main(int argc, char *argv[]) {
-  uint16_t port = argc > 1 ? atoi(argv[1]) : OPC_DEFAULT_PORT;
+  uint16_t port = 7890; //argc > 1 ? atoi(argv[1]) : OPC_DEFAULT_PORT;
    
   RGBMatrix::Options defaults;
   defaults.hardware_mapping = "adafruit-hat";  // or e.g. "adafruit-hat"
@@ -64,10 +68,12 @@ int main(int argc, char *argv[]) {
   defaults.cols = 64;
   defaults.chain_length = 1;
   defaults.parallel = 1;
-  defaults.show_refresh_rate = true;
+  defaults.show_refresh_rate = false;
   canvas = rgb_matrix::CreateMatrixFromFlags(&argc, &argv, &defaults);
   if (canvas == NULL)
     return 1;
+
+  //canvas->SetBrightness(10);
 
   // It is always good to set up a signal handler to cleanly exit when we
   // receive a CTRL-C for instance. The DrawOnCanvas() routine is looking
@@ -77,9 +83,12 @@ int main(int argc, char *argv[]) {
   
   opc_source s = opc_new_source(port);
   while (s >= 0) {
-    opc_receive(s, handler, 777777000); //wait forever
+    opc_receive(s, handler, 5000); 
+    if (interrupt_received)
+      return 0;
   }
   
+  canvas->Clear();
   delete canvas;
 
   return 0;

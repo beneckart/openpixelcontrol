@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-spacing = 0.11  # m
+spacing = 0.09  # m
 lines = []
 for c in range(-12, 13):
     rs = [range(50), reversed(range(50))][c % 2]
